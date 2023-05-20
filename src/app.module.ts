@@ -14,7 +14,7 @@ import { SongModule } from './song/song.module'
       password: 'root',
       database: 'kalm',
       entities: [Song, Artist],
-      synchronize: false,
+      synchronize: true,
     }),
     SongModule,
   ],
