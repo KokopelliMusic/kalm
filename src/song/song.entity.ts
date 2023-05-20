@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm'
 import { Artist } from '../artist/artist.entity'
 
 @Entity()
@@ -9,7 +9,8 @@ export class Song {
   @Column()
   title: string
 
-  @Column()
+  @ManyToMany(() => Artist)
+  @JoinTable()
   artists: Artist[]
 
   @Column()
@@ -30,6 +31,12 @@ export class Song {
   @Column()
   playCount: number
 
-  @Column({ default: true })
-  isActive: boolean
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
+
+  @DeleteDateColumn()
+  deletedAt?: Date
 }

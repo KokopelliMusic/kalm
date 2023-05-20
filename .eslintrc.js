@@ -26,7 +26,8 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'semi': ['warn', 'never'],
-    'bracket-spacing': 'off',
+    "block-spacing": ["warn", "always"],
+    'object-curly-spacing': ['warn', 'always'],
     'prettier/prettier': 'error',
   },
 };

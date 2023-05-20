@@ -6,7 +6,7 @@ import { Song } from './song.entity'
 
 @Controller('song')
 export class SongController {
-  constructor(private songService: SongService) { }
+  constructor(private songService: SongService) {}
 
   @Get()
   findAll(@Req() req: Request) {
@@ -16,7 +16,7 @@ export class SongController {
 
   @Post()
   @HttpCode(204)
-  async create(@Body() createSongDto: CreateSongDto): Promise<Song | undefined> {
+  async create(@Body() createSongDto: CreateSongDto): Promise<Song | null> {
     return await this.songService.create(createSongDto)
   }
 }
