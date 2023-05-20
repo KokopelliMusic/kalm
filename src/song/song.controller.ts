@@ -8,7 +8,7 @@ import { Song } from './song.entity'
 export class SongController {
   constructor(private songService: SongService) {}
 
-  @Get()
+  @Get('all')
   findAll(@Req() req: Request) {
     console.log(req)
     return 'This action returns all songs'
