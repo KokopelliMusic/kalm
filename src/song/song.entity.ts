@@ -3,7 +3,7 @@ import { Artist } from '../artist/artist.entity'
 import { Image } from '../image/image.entity'
 
 @Entity()
-export abstract class Song extends BaseEntity {
+export class Song extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -22,7 +22,7 @@ export abstract class Song extends BaseEntity {
 
   @ManyToOne(() => Image, { nullable: true })
   @JoinTable()
-  image: string | null
+  image: Image
 
   @Column()
   platform: Platform

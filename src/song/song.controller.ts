@@ -3,6 +3,7 @@ import { Response } from 'express'
 import { SongService } from './song.service'
 import { CreateSongDto } from './create-song.dto'
 import { Song } from './song.entity'
+import { CreateSpotifyDto } from './create-spotify.dto'
 
 @Controller('song')
 export class SongController {
@@ -38,5 +39,10 @@ export class SongController {
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.NOT_FOUND)
     }
+  }
+
+  @Post('create-spotify')
+  async addSpotify(@Body() createSpotifyDto: CreateSpotifyDto) {
+    return await this.songService.addSpotify(createSpotifyDto)
   }
 }
