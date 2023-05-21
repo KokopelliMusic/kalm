@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity, OneToOne, ManyToOne } from 'typeorm'
 import { Artist } from '../artist/artist.entity'
+import { Image } from '../image/image.entity'
 
 @Entity()
-export class Song extends BaseEntity {
+export abstract class Song extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -19,11 +20,8 @@ export class Song extends BaseEntity {
   @Column()
   length: number
 
-  @Column({
-    type: 'text',
-    nullable: true,
-    default: null,
-  })
+  @ManyToOne(() => Image, { nullable: true })
+  @JoinTable()
   image: string | null
 
   @Column()
@@ -32,7 +30,7 @@ export class Song extends BaseEntity {
   @Column()
   platformId: string
 
-  @Column()
+  @Column({ default: 0 })
   playCount: number
 
   @CreateDateColumn()

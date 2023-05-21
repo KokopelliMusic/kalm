@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Res, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, Res, UsePipes, ValidationPipe } from '@nestjs/common'
 import { Response } from 'express'
 import { SongService } from './song.service'
 import { CreateSongDto } from './create-song.dto'
@@ -27,7 +27,16 @@ export class SongController {
   @Post()
   @HttpCode(204)
   async create(@Body() createSongDto: CreateSongDto): Promise<Song | null> {
-    console.log(createSongDto)
     return await this.songService.create(createSongDto)
+  }
+
+  @Post('play')
+  @HttpCode(204)
+  async play(@Query('id') songId: number) {
+    try {
+      return await this.songService.play(songId)
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.NOT_FOUND)
+    }
   }
 }

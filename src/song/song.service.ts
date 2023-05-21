@@ -4,6 +4,7 @@ import { Song } from './song.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Artist } from 'src/artist/artist.entity'
+import { Image } from 'src/image/image.entity'
 
 @Injectable()
 export class SongService {
@@ -14,8 +15,8 @@ export class SongService {
     private artistRepository: Repository<Artist>,
   ) {}
 
-  private async findById(id: number): Promise<Song[] | null> {
-    return this.songRepository.find({
+  private async findById(id: number): Promise<Song | null> {
+    const song = await this.songRepository.find({
       where: {
         id,
       },
@@ -23,6 +24,12 @@ export class SongService {
         artists: true,
       },
     })
+
+    if (song && song[0]) {
+      return song[0]
+    } else {
+      return null
+    }
   }
 
   async findAll(): Promise<Song[]> {
@@ -30,17 +37,22 @@ export class SongService {
   }
 
   async findOne(id: number): Promise<Song | null> {
-    const songs = await this.findById(id)
+    return await this.findById(id)
+  }
 
-    if (songs && songs?.length > 0) {
-      return songs[0]
+  async play(songId: number) {
+    const song = await this.findById(songId)
+
+    if (song) {
+      song.playCount += 1
+      await song.save()
     } else {
-      return null
+      throw new Error('Song not found')
     }
   }
 
   async create(createSongDto: CreateSongDto): Promise<Song | null> {
-    console.log(createSongDto)
+    console.log('Create!')
 
     const artists = await Promise.all(
       createSongDto.artists.map(async (artist) => {
@@ -53,10 +65,29 @@ export class SongService {
         if (artistEntity) {
           return artistEntity
         } else {
-          return this.artistRepository.save(artist)
+          // Now create the Image object
+          const a = new Artist()
+          a.name = artist.name
+          a.isActive = true
+
+          let image: Image | null = null
+
+          if (artist.image) {
+            image = new Image()
+            image.url = artist.image
+            image.save()
+          }
+
+          if (image) a.image = image
+
+          console.log(a)
+
+          return await a.save()
         }
       }),
     )
+
+    console.log(artists)
 
     let obj = {
       title: createSongDto.title,
@@ -72,8 +103,6 @@ export class SongService {
     } else {
       obj = Object.assign(obj, { image: null })
     }
-
-    console.log(obj)
 
     const song = await this.songRepository.save(obj)
 
