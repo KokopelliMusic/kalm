@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity } from 'typeorm'
 import { Artist } from '../artist/artist.entity'
 
 @Entity()
-export class Song {
+export class Song extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -19,11 +19,15 @@ export class Song {
   @Column()
   length: number
 
-  @Column()
-  image: string
+  @Column({
+    type: 'text',
+    nullable: true,
+    default: null,
+  })
+  image: string | null
 
   @Column()
-  platform: string
+  platform: Platform
 
   @Column()
   platformId: string
@@ -39,4 +43,11 @@ export class Song {
 
   @DeleteDateColumn()
   deletedAt?: Date
+}
+
+export enum Platform {
+  Spotify = 'spotify',
+  YouTube = 'youtube',
+  MP3 = 'mp3',
+  SoundCloud = 'soundcloud',
 }

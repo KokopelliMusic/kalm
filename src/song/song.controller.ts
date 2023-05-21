@@ -26,7 +26,7 @@ export class SongController {
 
   @Post()
   @HttpCode(204)
-  async create(@Body(new ValidationPipe()) createSongDto: CreateSongDto): Promise<Song | null> {
+  async create(@Body() createSongDto: CreateSongDto): Promise<Song | null> {
     console.log(createSongDto)
     return await this.songService.create(createSongDto)
   }

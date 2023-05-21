@@ -58,15 +58,24 @@ export class SongService {
       }),
     )
 
-    const song = await this.songRepository.save({
+    let obj = {
       title: createSongDto.title,
       album: createSongDto.album,
       length: createSongDto.length,
-      image: createSongDto.image,
       platform: createSongDto.platform,
       platformId: createSongDto.platformId,
       artists,
-    })
+    }
+
+    if (createSongDto.image) {
+      obj = Object.assign(obj, { image: createSongDto.image })
+    } else {
+      obj = Object.assign(obj, { image: null })
+    }
+
+    console.log(obj)
+
+    const song = await this.songRepository.save(obj)
 
     return song
   }
