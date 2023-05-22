@@ -33,7 +33,7 @@ export class SongController {
 
   @Post('play')
   @HttpCode(204)
-  async play(@Query('id') songId: number) {
+  async play(@Query('id') songId: string) {
     try {
       return await this.songService.play(songId)
     } catch (e) {

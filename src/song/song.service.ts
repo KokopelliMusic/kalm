@@ -19,7 +19,7 @@ export class SongService {
     private configService: ConfigService,
   ) {}
 
-  private async findById(id: number): Promise<Song | null> {
+  private async findById(id: string): Promise<Song | null> {
     const song = await this.songRepository.find({
       where: {
         id,
@@ -40,11 +40,11 @@ export class SongService {
     return this.songRepository.find()
   }
 
-  async findOne(id: number): Promise<Song | null> {
+  async findOne(id: string): Promise<Song | null> {
     return await this.findById(id)
   }
 
-  async play(songId: number) {
+  async play(songId: string) {
     const song = await this.findById(songId)
 
     if (song) {
@@ -56,8 +56,6 @@ export class SongService {
   }
 
   async create(createSongDto: CreateSongDto): Promise<Song | null> {
-    console.log('Create!')
-
     const artists = await Promise.all(
       createSongDto.artists.map(async (artist) => {
         const artistEntity = await this.artistRepository.findOne({
@@ -90,8 +88,6 @@ export class SongService {
         }
       }),
     )
-
-    console.log(artists)
 
     let obj = {
       title: createSongDto.title,
@@ -126,11 +122,17 @@ export class SongService {
     song.platform = Platform.Spotify
     song.platformId = spotify.id
 
-    const img = new Image()
-    img.url = spotify.album.images[0].url
-    await img.save()
+    const images = await Promise.all(
+      spotify.album.images.map(async (image: any) => {
+        const img = new Image()
+        img.url = image.url
+        img.size = image.height
+        await img.save()
+        return img
+      }),
+    )
 
-    song.image = img
+    song.image = images
 
     const artists = await Promise.all(
       spotify.artists.map(async (artist: any) => {

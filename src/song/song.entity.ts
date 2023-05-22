@@ -1,11 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity, OneToOne, ManyToOne } from 'typeorm'
+import { Entity, Column, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity, BeforeInsert, ManyToOne, PrimaryColumn } from 'typeorm'
 import { Artist } from '../artist/artist.entity'
 import { Image } from '../image/image.entity'
+import { createId } from '@paralleldrive/cuid2'
 
 @Entity()
 export class Song extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryColumn()
+  id: string
+
+  @BeforeInsert()
+  private beforeInsert() {
+    this.id = createId()
+  }
 
   @Column()
   title: string
@@ -20,9 +26,9 @@ export class Song extends BaseEntity {
   @Column()
   length: number
 
-  @ManyToOne(() => Image, { nullable: true })
+  @ManyToMany(() => Image, { nullable: true })
   @JoinTable()
-  image: Image
+  image: Image[]
 
   @Column()
   platform: Platform

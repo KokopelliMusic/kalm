@@ -1,10 +1,16 @@
 import { Image } from 'src/image/image.entity'
-import { Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinTable } from 'typeorm'
+import { Entity, Column, PrimaryColumn, BaseEntity, BeforeInsert, ManyToOne, JoinTable } from 'typeorm'
+import { createId } from '@paralleldrive/cuid2'
 
 @Entity()
 export class Artist extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number
+  @PrimaryColumn()
+  id: string
+
+  @BeforeInsert()
+  private beforeInsert() {
+    this.id = createId()
+  }
 
   @Column()
   name: string

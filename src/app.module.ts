@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { config } from 'dotenv'
 import { SongModule } from './song/song.module'
+import { PlaylistModule } from './playlist/playlist.module'
 
 config()
 
@@ -22,6 +23,7 @@ const configService = new ConfigService()
       entities: ['dist/**/*.entity.{ts,js}'],
     }),
     SongModule,
+    PlaylistModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
