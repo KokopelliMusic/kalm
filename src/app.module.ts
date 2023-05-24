@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { config } from 'dotenv'
 import { SongModule } from './song/song.module'
 import { PlaylistModule } from './playlist/playlist.module'
+import { BullModule } from '@nestjs/bullmq'
+import { StreamModule } from './stream/stream.module'
 
 config()
 
@@ -24,8 +26,15 @@ const configService = new ConfigService()
     }),
     SongModule,
     PlaylistModule,
+    StreamModule,
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
     }),
   ],
 })

@@ -40,5 +40,4 @@ export class Playlist extends BaseEntity {
       return null
     }
   }
-
 }

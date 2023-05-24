@@ -8,6 +8,8 @@ import { Image } from 'src/image/image.entity'
 import { CreateSpotifyDto } from './create-spotify.dto'
 import spotifyUtils from 'src/utils/spotify.utils'
 import { ConfigService } from '@nestjs/config'
+import { InjectQueue } from '@nestjs/bullmq'
+import { Queue } from 'bullmq'
 
 @Injectable()
 export class SongService {
@@ -17,6 +19,7 @@ export class SongService {
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
     private configService: ConfigService,
+    @InjectQueue('lookup-song') private lookupSongQueue: Queue,
   ) {}
 
   private async findById(id: string): Promise<Song | null> {
@@ -26,6 +29,7 @@ export class SongService {
       },
       relations: {
         artists: true,
+        image: true,
       },
     })
 
@@ -106,6 +110,9 @@ export class SongService {
 
     const song = await this.songRepository.save(obj)
 
+    // Now we need to queue up the song for lookup
+    this.lookupSongQueue.add('lookup-song', { song })
+
     return song
   }
 
@@ -113,6 +120,22 @@ export class SongService {
     const id = this.configService.get('SPOTIFY_ID')
     const secret = this.configService.get('SPOTIFY_SECRET')
     const spotify = await spotifyUtils.getById(createSpotifyDto.spotifyId, id, secret)
+
+    // First we check if the song already exists
+    const existingSong = await this.songRepository.findOne({
+      where: {
+        platform: Platform.Spotify,
+        platformId: createSpotifyDto.spotifyId,
+      },
+      relations: {
+        artists: true,
+        image: true,
+      },
+    })
+
+    if (existingSong) {
+      return existingSong
+    }
 
     // Now we can use this object to create a song
     const song = new Song()
@@ -166,6 +189,11 @@ export class SongService {
 
     song.artists = artists
 
-    return await song.save()
+    await song.save()
+
+    // Now we need to queue up the song for lookup
+    await this.lookupSongQueue.add('lookup-song', { song })
+
+    return song
   }
 }
