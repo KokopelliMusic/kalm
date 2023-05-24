@@ -1,4 +1,5 @@
 .env
+/static/*.mp3
 
 # compiled output
 /dist
