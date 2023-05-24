@@ -6,6 +6,7 @@ import { Repository } from 'typeorm'
 import * as ytdl from 'ytdl-core'
 import * as ffmpeg from 'fluent-ffmpeg'
 import * as yt from 'usetube'
+import { Logger } from '@nestjs/common'
 
 interface JobType {
   song: Song
@@ -14,12 +15,14 @@ interface JobType {
 
 @Processor('download-song')
 export class DownloadSongConsumer extends WorkerHost {
+  private readonly logger = new Logger(DownloadSongConsumer.name)
+
   constructor(@InjectRepository(Song) private songRepository: Repository<Song>) {
     super()
   }
 
   async process(job: Job<JobType>) {
-    console.log('Starting download')
+    this.logger.log('Starting download of song ' + job.data.song.id)
 
     const info = await ytdl.getInfo(job.data.video.id)
 
@@ -32,11 +35,11 @@ export class DownloadSongConsumer extends WorkerHost {
 
   @OnWorkerEvent('failed')
   onFailed(job: Job<JobType>, err: Error) {
-    console.log('failed download', err)
+    this.logger.warn('Failed to download song ' + job.data.song.id, err)
   }
 
   @OnWorkerEvent('completed')
   onCompleted() {
-    console.log('completed download')
+    this.logger.log('Completed download')
   }
 }

@@ -86,8 +86,6 @@ export class SongService {
 
           if (image) a.image = image
 
-          console.log(a)
-
           return await a.save()
         }
       }),
