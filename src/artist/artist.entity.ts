@@ -1,5 +1,5 @@
 import { Image } from 'src/image/image.entity'
-import { Entity, Column, PrimaryColumn, BaseEntity, BeforeInsert, ManyToOne, JoinTable } from 'typeorm'
+import { Entity, Column, PrimaryColumn, BaseEntity, BeforeInsert, ManyToMany, JoinTable } from 'typeorm'
 import { createId } from '@paralleldrive/cuid2'
 
 @Entity()
@@ -15,10 +15,16 @@ export class Artist extends BaseEntity {
   @Column()
   name: string
 
-  @ManyToOne(() => Image, { nullable: true })
+  @ManyToMany(() => Image, { nullable: true })
   @JoinTable()
-  image: Image
+  images: Image[]
 
   @Column({ default: true })
   isActive: boolean
+
+  @Column('varchar', { array: true })
+  genres: string[]
+
+  @Column({ nullable: true })
+  spotifyId: string
 }

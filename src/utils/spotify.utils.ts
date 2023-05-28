@@ -39,6 +39,14 @@ class SpotifyUtils {
   async getById(id: string, spotifyId: string, secret: string) {
     return await this.query(`https://api.spotify.com/v1/tracks/${id}`, spotifyId, secret)
   }
+
+  async getArtistById(id: string, spotifyId: string, secret: string) {
+    return await this.query(`https://api.spotify.com/v1/artists/${id}`, spotifyId, secret)
+  }
+
+  async getAlbumById(id: string, spotifyId: string, secret: string) {
+    return await this.query(`https://api.spotify.com/v1/albums/${id}`, spotifyId, secret)
+  }
 }
 
 export default new SpotifyUtils()

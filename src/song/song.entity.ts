@@ -2,6 +2,7 @@ import { Entity, Column, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColu
 import { Artist } from '../artist/artist.entity'
 import { Image } from '../image/image.entity'
 import { createId } from '@paralleldrive/cuid2'
+import { Album } from 'src/album/entities/album.entity'
 
 @Entity()
 export class Song extends BaseEntity {
@@ -20,8 +21,9 @@ export class Song extends BaseEntity {
   @JoinTable()
   artists: Artist[]
 
-  @Column()
-  album: string
+  @ManyToMany(() => Album, { nullable: true })
+  @JoinTable()
+  album: Album
 
   @Column()
   length: number

@@ -6,6 +6,8 @@ import { SongModule } from './song/song.module'
 import { PlaylistModule } from './playlist/playlist.module'
 import { BullModule } from '@nestjs/bullmq'
 import { StreamModule } from './stream/stream.module'
+import { PlaycountModule } from './playcount/playcount.module'
+import { AlbumModule } from './album/album.module'
 
 config()
 
@@ -27,6 +29,8 @@ const configService = new ConfigService()
     SongModule,
     PlaylistModule,
     StreamModule,
+    PlaycountModule,
+    AlbumModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
