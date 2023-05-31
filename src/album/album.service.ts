@@ -88,7 +88,12 @@ export class AlbumService {
   }
 
   async findAll() {
-    return await this.albumRepository.find()
+    return await this.albumRepository.find({
+      relations: {
+        image: true,
+        artists: true,
+      },
+    })
   }
 
   async findOne(id: string) {
@@ -96,7 +101,24 @@ export class AlbumService {
       where: {
         id,
       },
+      relations: {
+        image: true,
+        artists: true,
+      },
     })
+  }
+
+  async findRandom() {
+    return (
+      await this.albumRepository
+        .createQueryBuilder('album')
+        .select()
+        .orderBy('RANDOM()')
+        .limit(20)
+        .innerJoinAndMapMany('album.artists', 'album.artists', 'artist')
+        .innerJoinAndMapMany('album.image', 'album.image', 'image')
+        .getMany()
+    ).splice(0, 4)
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {

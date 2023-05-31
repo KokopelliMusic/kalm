@@ -17,6 +17,11 @@ export class AlbumController {
     return this.albumService.findAll()
   }
 
+  @Get('/random')
+  findRandom() {
+    return this.albumService.findRandom()
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.albumService.findOne(id)

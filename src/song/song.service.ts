@@ -12,6 +12,7 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Queue } from 'bullmq'
 import { Playcount } from 'src/playcount/playcount.entity'
 import { AlbumService } from 'src/album/album.service'
+import { PaginateQuery, paginate } from 'nestjs-paginate'
 
 @Injectable()
 export class SongService {
@@ -35,6 +36,7 @@ export class SongService {
       relations: {
         artists: true,
         image: true,
+        album: true,
       },
     })
 
@@ -45,8 +47,25 @@ export class SongService {
     }
   }
 
-  async findAll(): Promise<Song[]> {
-    return this.songRepository.find()
+  async findAll(query: PaginateQuery) {
+    return paginate(query, this.songRepository, {
+      sortableColumns: ['title', 'length', 'album'],
+      nullSort: 'last',
+      defaultSortBy: [['title', 'ASC']],
+      searchableColumns: ['title', 'album'],
+      relations: ['artists', 'image'],
+    })
+  }
+
+  async findRandom(): Promise<Song[]> {
+    return (
+      await this.songRepository
+        .createQueryBuilder('song')
+        .orderBy('RANDOM()')
+        .leftJoinAndSelect('song.image', 'image')
+        .leftJoinAndSelect('song.artists', 'artist')
+        .getMany()
+    ).splice(0, 4)
   }
 
   async findOne(id: string): Promise<Song | null> {
@@ -205,7 +224,9 @@ export class SongService {
 
       song.image = album.image
 
-      const artists = await Promise.all(spotify.artists.map(async (artist: any) => await this.createSpotifyArtist(qr, artist.id, id, secret)))
+      const artists = await Promise.all(
+        spotify.artists.map(async (artist: any) => await this.createSpotifyArtist(qr, artist.id, id, secret)),
+      )
 
       song.artists = artists
 

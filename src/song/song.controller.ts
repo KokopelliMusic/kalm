@@ -5,14 +5,20 @@ import { CreateSongDto } from './create-song.dto'
 import { Song } from './song.entity'
 import { CreateSpotifyDto } from './create-spotify.dto'
 import { PlaySongDto } from './play-song.dto'
+import { Paginate, PaginateQuery } from 'nestjs-paginate'
 
 @Controller('song')
 export class SongController {
   constructor(private songService: SongService) {}
 
   @Get('all')
-  async findAll() {
-    return await this.songService.findAll()
+  async findAll(@Paginate() query: PaginateQuery) {
+    return await this.songService.findAll(query)
+  }
+
+  @Get('random')
+  async findRandom() {
+    return await this.songService.findRandom()
   }
 
   @Get(':id')
